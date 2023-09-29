@@ -4,111 +4,87 @@ using UnityEngine;
 using System.Linq;
 
 /// <summary>
-/// Enemy spawner.
+/// Cơ chế sinh kẻ địch
 /// </summary>
 public class SpawnPoint : MonoBehaviour
 {
     /// <summary>
-    /// Enemy wave structure.
+    /// Cơ chế làn sóng
     /// </summary>
     [System.Serializable]
     public class Wave
     {
-        // Delay before wave run
+        // Độ trễ trước khi vào đợt sóng
         public float timeBeforeWave;
-        // List of enemies in this wave
+        // Danh sách kẻ thù trong đợt sóng 
         public List<GameObject> enemies;
     }
 
-    // If enemy not set, this folder will use to get random enemy
+    // Nếu kẻ thù không được đặt, thư mục này sẽ được sử dụng để lấy kẻ thù ngẫu nhiên
     public string enemiesResourceFolder = "Prefabs/Enemies";
-    // Enemies will have different speed in specified interval
+    // Kẻ thù sẽ có tốc độ khác nhau trong khoảng thời gian nhất định
     public float speedRandomizer = 0.2f;
-    // Delay between enemies spawn in wave
+    // Độ trễ giữa kẻ thù xuất hiện trong đợt
     public float unitSpawnDelay = 0.8f;
-    // Waves list for this spawner
+    // Danh sách sinh sản 
     public List<Wave> waves;
 
-    // Enemies will move along this pathway
+    // Kẻ thù di chuyển theo Pathway
     private Pathway path;
-    // Nearest wave
+    // Làn sóng gần nhất
     private Wave nextWave;
-    // Delay counter
+    // Bộ đếm độ trễ 
     private float counter;
-    // Wave started
+    // Bắt đầu đợt sóng
     private bool waveInProgress;
-    // List for random enemy generation
+    // Danh sách tạo kẻ địch ngẫu nhiên
     private List<GameObject> enemyPrefabs;
-    // Buffer with active spawned enemies
+    // Bộ đệm với kẻ thù sinh ra đang hoạt động
     private List<GameObject> activeEnemies = new List<GameObject>();
-
-    /// <summary>
-    /// Awake this instance.
-    /// </summary>
     void Awake ()
     {
         path = GetComponentInParent<Pathway>();
-        // Load enemies prefabs from specified directory
+        // Tải prefab kẻ thù từ thư mục chỉ định
         enemyPrefabs = Resources.LoadAll<GameObject>(enemiesResourceFolder).ToList();
-        Debug.Assert((path != null) && (enemyPrefabs != null), "Wrong initial parameters");
+        Debug.Assert((path != null) && (enemyPrefabs != null), "Tham số khởi tạo sai");
     }
-
-    /// <summary>
-    /// Raises the enable event.
-    /// </summary>
     void OnEnable()
     {
         EventManager.StartListening("UnitDie", UnitDie);
     }
-
-    /// <summary>
-    /// Raises the disable event.
-    /// </summary>
     void OnDisable()
     {
         EventManager.StopListening("UnitDie", UnitDie);
     }
-
-    /// <summary>
-    /// Start this instance.
-    /// </summary>
     void Start()
     {
         if (waves.Count > 0)
         {
-            // Start from first wave
+            // Bắt đầu từ đợt đầu tiên
             nextWave = waves[0];
         }
     }
-
-    /// <summary>
-    /// Update this instance.
-    /// </summary>
     void Update()
     {
-        // Wait for next wave
+        // Chờ đến đợt tiếp theo
         if ((nextWave != null) && (waveInProgress == false))
         {
             counter += Time.deltaTime;
             if (counter >= nextWave.timeBeforeWave)
             {
                 counter = 0f;
-                // Start new wave
+                // Bắt đầu đợt mới
                 StartCoroutine(RunWave());
             }
         }
-        // If all spawned enemies are dead
+        // Nếu tất cả kẻ thù chết
         if ((nextWave == null) && (activeEnemies.Count <= 0))
         {
             EventManager.TriggerEvent("AllEnemiesAreDead", null, null);
-            // Turn off spawner
+            // Tắt cơ chế sinh kẻ thù
             enabled = false;
         }
     }
-
-    /// <summary>
-    /// Gets the next wave.
-    /// </summary>
     private void GetNextWave()
     {
         int idx = waves.IndexOf(nextWave) + 1;
@@ -121,11 +97,6 @@ public class SpawnPoint : MonoBehaviour
             nextWave = null;
         }
     }
-
-    /// <summary>
-    /// Runs the wave.
-    /// </summary>
-    /// <returns>The wave.</returns>
     private IEnumerator RunWave()
     {
         waveInProgress = true;
@@ -133,38 +104,32 @@ public class SpawnPoint : MonoBehaviour
         {
             GameObject prefab = null;
             prefab = enemy;
-            // If enemy prefab not specified - get random enemy
+            // Nếu prefab kẻ thù không địch chỉ định, lấy kẻ thù ngẫu nhiên
             if (prefab == null)
             {
                 prefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Count)];
             }
-            // Create enemy
+            // Tạo kẻ địch
             GameObject newEnemy = Instantiate(prefab, transform.position, transform.rotation);
-            // Set pathway
+            // Cài đặt đường dẫn
             newEnemy.GetComponent<AiStatePatrol>().path = path;
             NavAgent agent = newEnemy.GetComponent<NavAgent>();
-            // Set speed offset
+            // Cài đặt tốc độ offset
             agent.speed = Random.Range(agent.speed * (1f - speedRandomizer), agent.speed * (1f + speedRandomizer));
-            // Add enemy to list
+            // Thêm kẻ thù vào danh sách
             activeEnemies.Add(newEnemy);
-            // Wait for delay before next enemy run
+            // Đợi độ trễ trước khi kẻ địch chạy tiếp
             yield return new WaitForSeconds(unitSpawnDelay);
         }
         GetNextWave();
         waveInProgress = false;
     }
-
-    /// <summary>
-    /// On unit die.
-    /// </summary>
-    /// <param name="obj">Object.</param>
-    /// <param name="param">Parameter.</param>
     private void UnitDie(GameObject obj, string param)
     {
-        // If this is active enemy
+        // Nếu kẻ thù vẫn hoạt động
         if (activeEnemies.Contains(obj) == true)
         {
-            // Remove it from buffer
+            // Xóa khỏi bộ đệm
             activeEnemies.Remove(obj);
         }
     }

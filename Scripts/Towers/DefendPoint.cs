@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Position for defenders.
+/// Vị trí cho người bảo vệ
 /// </summary>
 public class DefendPoint : MonoBehaviour
 {
     /// <summary>
-    /// Gets the defend points list.
+    /// Lấy danh sách điểm phòng thủ.
     /// </summary>
-    /// <returns>The defend points.</returns>
+    /// <returns>Các điểm bảo vệ.</returns>
     public List<Transform> GetDefendPoints()
     {
         List<Transform> children = new List<Transform>();

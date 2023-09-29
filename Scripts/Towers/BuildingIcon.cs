@@ -4,20 +4,20 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// UI icon in towers building tree.
+/// Biểu tượng UI trong cây xây dựng tháp.
 /// </summary>
 public class BuildingIcon : MonoBehaviour
 {
-    // Tower prefab for this icon
+    // Prefab tháp cho biểu tượng này
     public GameObject towerPrefab;
 
-    // Text field for tower price
+    // Trường text cho giá tháp
     private Text price;
-    // Parent building tree
+    // Cây xây dựng cha
     private BuildingTree myTree;
 
     /// <summary>
-    /// Raises the enable event.
+    /// Khởi chạy sự kiện khi kích hoạt.
     /// </summary>
     void OnEnable()
     {
@@ -25,45 +25,35 @@ public class BuildingIcon : MonoBehaviour
     }
 
     /// <summary>
-    /// Raises the disable event.
+    /// Kết thúc sự kiện khi vô hiệu hóa.
     /// </summary>
     void OnDisable()
     {
         EventManager.StopListening("UserClick", UserClick);
     }
-
-    /// <summary>
-    /// Awake this instance.
-    /// </summary>
     void Awake()
     {
-        // Get building tree from parent object
+        // Lấy cây xây dựng từ đối tượng cha
         myTree = transform.GetComponentInParent<BuildingTree>();
         price = GetComponentInChildren<Text>();
-        Debug.Assert(price && myTree, "Wrong initial parameters");
+        Debug.Assert(price && myTree, "Tham số đầu vào sai");
         if (towerPrefab == null)
         {
-            // If this icon have no tower prefab - hide icon
+            // Nếu biểu tượng này không có prefab tháp - ẩn biểu tượng
             gameObject.SetActive(false);
         }
         else
         {
-            // Display tower price
+            // Hiển thị giá tháp
             price.text = towerPrefab.GetComponent<Price>().price.ToString();
         }
     }
-
-    /// <summary>
-    /// On user click.
-    /// </summary>
-    /// <param name="obj">Object.</param>
-    /// <param name="param">Parameter.</param>
     private void UserClick(GameObject obj, string param)
     {
-        // If clicked on this icon
+        // Nếu nhấp chuột vào biểu tượng này
         if (obj == gameObject)
         {
-            // Build the tower
+            // Xây dựng tháp 
             myTree.Build(towerPrefab);
         }
     }

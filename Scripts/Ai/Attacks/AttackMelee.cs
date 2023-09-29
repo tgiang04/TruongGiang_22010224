@@ -3,22 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Attack with melee weapon
+/// Co che tan cong ban vu khi gan
 /// </summary>
 public class AttackMelee : MonoBehaviour, IAttack
 {
-    // Damage amount
     public int damage = 1;
-    // Cooldown between attacks
+    // Thoi gian cho giua cac lan tan cong
     public float cooldown = 1f;
 
-    // Animation controller for this AI
+    // Bo dieu khien Animation
     private Animation anim;
-    // Counter for cooldown calculation
+    // Bien dem tinh toan thoi gian cho
     private float cooldownCounter;
 
     /// <summary>
-    /// Awake this instance.
+    /// Khoi tao doi tuong
     /// </summary>
     void Awake()
     {
@@ -27,7 +26,7 @@ public class AttackMelee : MonoBehaviour, IAttack
     }
 
     /// <summary>
-    /// Update this instance.
+    /// Cap nhat doi tuong
     /// </summary>
     void Update()
     {
@@ -38,7 +37,7 @@ public class AttackMelee : MonoBehaviour, IAttack
     }
 
     /// <summary>
-    /// Attack the specified target if cooldown expired
+    /// Bat dau tan cong neu thoi gian cho da ket thuc
     /// </summary>
     /// <param name="target">Target.</param>
     public void Attack(Transform target)
@@ -51,14 +50,14 @@ public class AttackMelee : MonoBehaviour, IAttack
     }
 
     /// <summary>
-    /// Make melee attack
+    /// Thuc hien tan cong
     /// </summary>
     /// <param name="target">Target.</param>
     private void Smash(Transform target)
     {
         if (target != null)
         {
-            // If target can receive damage
+            // Neu muc tieu co the nhan sat thuong
             DamageTaker damageTaker = target.GetComponent<DamageTaker>();
             if (damageTaker != null)
             {

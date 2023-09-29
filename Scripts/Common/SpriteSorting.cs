@@ -3,21 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Operate sprite order depend on y position.
+/// Điều khiển thứ tự hiển thị của sprite dựa trên vị trí y
 /// </summary>
 public class SpriteSorting : MonoBehaviour
 {
-    // Static will no change order on update, only on start
+    // Cài đặt này là tĩnh sẽ không thay đổi thứ tự trong quá trình cập nhật, chỉ thay đổi khi bắt đầu
     public bool isStatic;
-    // Multiplier for accuracy inreasing
+    // Hệ số tăng độ chính xác
     public float rangeFactor = 100f;
 
-    // Sprites list for this object an clildren
+    // Danh sách sprite cho đối tượng
     private Dictionary<SpriteRenderer, int> sprites = new Dictionary<SpriteRenderer, int>();
-
-    /// <summary>
-    /// Awake this instance.
-    /// </summary>
     void Awake()
     {
         foreach (SpriteRenderer sprite in GetComponentsInChildren<SpriteRenderer>())
@@ -25,18 +21,10 @@ public class SpriteSorting : MonoBehaviour
             sprites.Add(sprite, sprite.sortingOrder);
         }
     }
-
-    /// <summary>
-    /// Start this instance.
-    /// </summary>
     void Start()
     {
         UpdateSortingOrder();
     }
-
-    /// <summary>
-    /// Update this instance.
-    /// </summary>
     void Update()
     {
         if (isStatic == false)
@@ -46,7 +34,7 @@ public class SpriteSorting : MonoBehaviour
     }
 
     /// <summary>
-    /// Update sprites sorting order.
+    /// Cập nhật thứ tự hiển thị của sprites
     /// </summary>
     private void UpdateSortingOrder()
     {

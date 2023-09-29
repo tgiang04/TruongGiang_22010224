@@ -4,41 +4,29 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Level control script.
+/// Scripts điều khiển cấp độ
 /// </summary>
 public class LevelManager : MonoBehaviour
 {
-    // User interface manager
+    // Quản lí giao diện người dùng
     private UiManager uiManager;
-    // Nymbers of enemy spawners in this level
+    // Số lượng điểm xuất hiện địch trong màn này
     private int spawnNumbers;
-
-    /// <summary>
-    /// Awake this instance.
-    /// </summary>
     void Awake()
     {
         uiManager = FindObjectOfType<UiManager>();
         spawnNumbers = FindObjectsOfType<SpawnPoint>().Length;
         if (spawnNumbers <= 0)
         {
-            Debug.LogError("Have no spawners");
+            Debug.LogError("Khong co diem xuat hien");
         }
-        Debug.Assert(uiManager, "Wrong initial parameters");
+        Debug.Assert(uiManager, "Tham so khoi tao sai");
     }
-
-    /// <summary>
-    /// Raises the enable event.
-    /// </summary>
     void OnEnable()
     {
         EventManager.StartListening("Captured", Captured);
         EventManager.StartListening("AllEnemiesAreDead", AllEnemiesAreDead);
     }
-
-    /// <summary>
-    /// Raises the disable event.
-    /// </summary>
     void OnDisable()
     {
         EventManager.StopListening("Captured", Captured);
@@ -98,7 +86,7 @@ public class LevelManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Enemy reached capture point.
+    /// Kẻ địch đã đến điểm bắt giữ.
     /// </summary>
     /// <param name="obj">Object.</param>
     /// <param name="param">Parameter.</param>
@@ -109,17 +97,15 @@ public class LevelManager : MonoBehaviour
     }
 
     /// <summary>
-    /// All enemies are dead.
+    /// Tất cả kẻ địch bị tiêu diệt
     /// </summary>
     /// <param name="obj">Object.</param>
     /// <param name="param">Parameter.</param>
     private void AllEnemiesAreDead(GameObject obj, string param)
     {
         spawnNumbers--;
-        // Enemies dead at all spawners
         if (spawnNumbers <= 0)
         {
-            // Victory
             uiManager.GoToVictoryMenu();
         }
     }

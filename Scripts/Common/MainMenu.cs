@@ -4,12 +4,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Main menu operate.
+/// Menu chính
 /// </summary>
 public class MainMenu : MonoBehaviour
 {
     /// <summary>
-    /// Load level.
+    /// Tải level
     /// </summary>
     public void NewGame()
     {
@@ -17,7 +17,7 @@ public class MainMenu : MonoBehaviour
     }
 
     /// <summary>
-    /// Close application.
+    /// Đóng ứng dụng
     /// </summary>
     public void Quit()
     {

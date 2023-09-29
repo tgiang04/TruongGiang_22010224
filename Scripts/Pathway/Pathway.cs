@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Pathway for enemy moving.
+/// Đường dẫn cho kẻ địch di chuyển
 /// </summary>
 [ExecuteInEditMode]
 public class Pathway : MonoBehaviour
 {
-    /// <summary>
-    /// Update this instance.
-    /// </summary>
     void Update()
     {
         Waypoint[] waypoints = GetComponentsInChildren<Waypoint>();
@@ -19,16 +16,16 @@ public class Pathway : MonoBehaviour
             int idx;
             for (idx = 1; idx < waypoints.Length; idx++)
             {
-                // Draw blue lines along pathway in edit mode
+                // Vẽ các đường màu xanh ở chế độ edit
                 Debug.DrawLine(waypoints[idx - 1].transform.position, waypoints[idx].transform.position, Color.blue);
             }
         }
     }
 
     /// <summary>
-    /// Gets the nearest waypoint for specified position.
+    /// Lấy điểm tham chiếu gần nhất cho vị trí được chỉ định
     /// </summary>
-    /// <returns>The nearest waypoint.</returns>
+    /// <returns>Điểm đến gần nhất.</returns>
     /// <param name="position">Position.</param>
     public Waypoint GetNearestWaypoint(Vector3 position)
     {
@@ -38,7 +35,7 @@ public class Pathway : MonoBehaviour
         {
             if (waypoint.GetHashCode() != GetHashCode())
             {
-                // Calculate distance to waypoint
+                // Tính toán khoảng cách đến điểm tham chiếu 
                 Vector3 vect = position - waypoint.transform.position;
                 float distance = vect.magnitude;
                 if (distance < minDistance)
@@ -52,10 +49,10 @@ public class Pathway : MonoBehaviour
     }
 
     /// <summary>
-    /// Gets the next waypoint on this pathway.
+    /// Nhận điểm tham chiếu tiếp theo đến con đường này 
     /// </summary>
-    /// <returns>The next waypoint.</returns>
-    /// <param name="currentWaypoint">Current waypoint.</param>
+    /// <returns>Điểm tiếp theo.</returns>
+    /// <param name="currentWaypoint">Điểm gần đó.</param>
     /// <param name="loop">If set to <c>true</c> loop.</param>
     public Waypoint GetNextWaypoint(Waypoint currentWaypoint, bool loop)
     {

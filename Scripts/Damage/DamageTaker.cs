@@ -3,60 +3,51 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// This target can receive damage.
+/// Đối tượng có thể nhận sát thương
 /// </summary>
 public class DamageTaker : MonoBehaviour
 {
-    // Start hitpoints
+    // Số điểm sát thương ban đầu
     public int hitpoints = 1;
-    // Remaining hitpoints
+    // Số điểm sát thương hiện tại
     public int currentHitpoints;
-    // Hit visual effect duration
+    // Thời gian hiển thị hiệu ứng va chạm
     public float hitDisplayTime = 0.2f;
 
-    // Image of this object
+    // Hình ảnh của đối tượng này
     private SpriteRenderer sprite;
-    // Visualisation of hit
+    // Hiệu ứng hình ảnh khi bị va chạm
     private bool hitCoroutine;
-
-    /// <summary>
-    /// Awake this instance.
-    /// </summary>
     void Awake()
     {
         currentHitpoints = hitpoints;
         sprite = GetComponentInChildren<SpriteRenderer>();
-        Debug.Assert(sprite, "Wrong initial parameters");
+        Debug.Assert(sprite, "Tham so khoi tao sai");
     }
 
     /// <summary>
-    /// Take damage.
+    /// Nhận sát thương
     /// </summary>
     /// <param name="damage">Damage.</param>
     public void TakeDamage(int damage)
     {
         if (currentHitpoints > damage)
         {
-            // Still alive
+            // Mục tiêu vẫn còn ống
             currentHitpoints -= damage;
-            // If no coroutine now
+            // Nếu không có coroutine hiện tại
             if (hitCoroutine == false)
             {
-                // Damage visualisation
+                // Hiển thị hiệu ứng sát thương
                 StartCoroutine(DisplayDamage());
             }
         }
         else
         {
-            // Die
             currentHitpoints = 0;
             Die();
         }
     }
-
-    /// <summary>
-    /// Die this instance.
-    /// </summary>
     public void Die()
     {
         EventManager.TriggerEvent("UnitDie", gameObject, null);
@@ -64,7 +55,7 @@ public class DamageTaker : MonoBehaviour
     }
 
     /// <summary>
-    /// Damage visualisation.
+    /// Hiệu ứng hình ảnh khi nhận sát thương
     /// </summary>
     /// <returns>The damage.</returns>
     IEnumerator DisplayDamage()
@@ -72,7 +63,6 @@ public class DamageTaker : MonoBehaviour
         hitCoroutine = true;
         Color originColor = sprite.color;
         float counter;
-        // Set color to black and return to origin color over time
         for (counter = 0f; counter < hitDisplayTime; counter += Time.deltaTime)
         {
             sprite.color = Color.Lerp(originColor, Color.black, Mathf.PingPong(counter, hitDisplayTime));

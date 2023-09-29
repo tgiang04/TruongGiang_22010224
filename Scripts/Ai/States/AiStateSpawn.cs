@@ -3,90 +3,58 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Allows tower to spawn new obects with cooldown.
+/// Tháp tạo ra đối tượng mới giứa các lần chờ  
 /// </summary>
 public class AiStateSpawn : MonoBehaviour, IAiState
 {
-    // Cooldown for between spawns
+    // Thời gian chờ giữa các lần tạo 
     public float cooldown = 10f;
-    // Max number of spawned obects in buffer
+    // Số lượng tối đa được tạo 
     public int maxNum = 2;
-    // Spawned obects will be alive after AI destroing
+    // Các đối tượng được tạo sẽ sống sau khi AI bị hủy 
     public float delayAfterDestroy = 2f;
-    // Spawned object prefab
+    // Tạo đối tượng prefabs 
     public GameObject prefab;
-    // Position for spawning
+    // Vị trí để tạo đối tượng mới 
     public Transform spawnPoint;
-    // Go to this state if agressive event occures
     public string agressiveAiState;
-    // Go to this state if passive event occures
     public string passiveAiState;
-
-    // AI behavior of this object
     private AiBehavior aiBehavior;
-    // Defend points for this tower
+    // Điểm phòng thủ cho tháp 
     private DefendPoint defPoint;
-    // Counter for cooldown calculation
+    // Bộ đếm giữa các thời gian chờ 
     private float cooldownCounter;
-    // Buffer with spawned objects
+    // Bộ đệm với các đối tượng được tạo
     private Dictionary<GameObject, Transform> defendersList = new Dictionary<GameObject, Transform>();
-
-    /// <summary>
-    /// Raises the enable event.
-    /// </summary>
     void OnEnable()
     {
         EventManager.StartListening("UnitDie", UnitDie);
     }
-
-    /// <summary>
-    /// Raises the disable event.
-    /// </summary>
     void OnDisable()
     {
         EventManager.StopListening("UnitDie", UnitDie);
     }
-
-    /// <summary>
-    /// Awake this instance.
-    /// </summary>
     void Awake ()
     {
         cooldownCounter = cooldown;
         aiBehavior = GetComponent<AiBehavior>();
         defPoint = transform.parent.GetComponentInChildren<DefendPoint>();
-        Debug.Assert (aiBehavior && spawnPoint && defPoint, "Wrong initial parameters");
+        Debug.Assert (aiBehavior && spawnPoint && defPoint, "Tham so khoi tao sai ");
     }
-
-    /// <summary>
-    /// Raises the state enter event.
-    /// </summary>
-    /// <param name="previousState">Previous state.</param>
-    /// <param name="newState">New state.</param>
     public void OnStateEnter (string previousState, string newState)
     {
 
     }
-
-    /// <summary>
-    /// Raises the state exit event.
-    /// </summary>
-    /// <param name="previousState">Previous state.</param>
-    /// <param name="newState">New state.</param>
     public void OnStateExit (string previousState, string newState)
     {
 
     }
-
-    /// <summary>
-    /// Update this instance.
-    /// </summary>
     void Update ()
     {
         cooldownCounter += Time.deltaTime;
         if (cooldownCounter >= cooldown)
         {
-            // Try to spawn new object on cooldown
+            // Tạo đối tượng mới giữa cooldown 
             if (TryToSpawn() == true)
             {
                 cooldownCounter = 0f;
@@ -98,18 +66,14 @@ public class AiStateSpawn : MonoBehaviour, IAiState
         }
     }
 
-    /// <summary>
-    /// Gets the free defend position if it is.
-    /// </summary>
-    /// <returns>The free defend position.</returns>
-    /// <param name="index">Index.</param>
+    // Lấy vị trí phòng thủ trống nếu có     
     private Transform GetFreeDefendPosition()
     {
         Transform res = null;
         List<Transform> points = defPoint.GetDefendPoints();
         foreach (Transform point in points)
         {
-            // If this point not busy already
+            // Nếu điểm chưa có gì 
             if (defendersList.ContainsValue(point) == false)
             {
                 res = point;
@@ -118,26 +82,22 @@ public class AiStateSpawn : MonoBehaviour, IAiState
         }
         return res;
     }
-
-    /// <summary>
-    /// Try to spawn new object.
-    /// </summary>
-    /// <returns><c>true</c>, if to spawn was tryed, <c>false</c> otherwise.</returns>
+    // Thử tạo ra đối tượng mới 
     private bool TryToSpawn()
     {
         bool res = false;
-        // If spawned objects number less then max allowed number
+        // Nếu số lượng được tạo ít hơn đối tượng cho phép 
         if ((prefab != null) && (defendersList.Count < maxNum))
         {
             Transform position = GetFreeDefendPosition();
-            // If there are free defend position
+            // Còn vị trí trống 
             if (position != null)
             {
-                // Create new obect
+                // Tạo đối tượng
                 GameObject obj = Instantiate<GameObject>(prefab, spawnPoint.position, spawnPoint.rotation);
-                // Set destination position
+                // Đặt vị trí đích 
                 obj.GetComponent<AiStateMove>().destination = position;
-                // Add spawned object to buffer
+                // Thêm vào bộ đệm 
                 defendersList.Add(obj, position);
                 res = true;
             }
@@ -145,59 +105,33 @@ public class AiStateSpawn : MonoBehaviour, IAiState
         return res;
     }
 
-    /// <summary>
-    /// Raises on every unit die.
-    /// </summary>
-    /// <param name="obj">Object.</param>
-    /// <param name="param">Parameter.</param>
+    //Gọi khi một đối tượng mất đi 
     private void UnitDie (GameObject obj, string param)
     {
-        // If this is object from my spawn buffer
         if (defendersList.ContainsKey(obj) == true)
         {
-            // Remove it from buffer
+            // xóa khỏi bộ đệm
             defendersList.Remove(obj);
         }
     }
-
-    /// <summary>
-    /// Triggers the enter.
-    /// </summary>
-    /// <param name="my">My.</param>
-    /// <param name="other">Other.</param>
     public void TriggerEnter(Collider2D my, Collider2D other)
     {
 
     }
-
-    /// <summary>
-    /// Triggers the stay.
-    /// </summary>
-    /// <param name="my">My.</param>
-    /// <param name="other">Other.</param>
     public void TriggerStay(Collider2D my, Collider2D other)
     {
 
     }
-
-    /// <summary>
-    /// Triggers the exit.
-    /// </summary>
-    /// <param name="my">My.</param>
-    /// <param name="other">Other.</param>
     public void TriggerExit(Collider2D my, Collider2D other)
     {
 
     }
 
-    /// <summary>
-    /// Raises the destroy event.
-    /// </summary>
     void OnDestroy()
     {
         foreach (KeyValuePair<GameObject, Transform> defender in defendersList)
         {
-            // Destroy all spawned objects after delay
+            // Hủy toàn bộ đối tượng 
             Destroy(defender.Key, delayAfterDestroy);
         }
     }

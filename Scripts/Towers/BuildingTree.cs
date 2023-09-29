@@ -3,28 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Building tree.
+/// Cây xây dựng
 /// </summary>
 public class BuildingTree : MonoBehaviour
 {
     /// <summary>
-    /// Tower that open this building tree.
+    /// Tháp mở trong cây xây dựng 
     /// </summary>
     [HideInInspector]
     public Tower myTower;
-
-    /// <summary>
-    /// Start this instance.
-    /// </summary>
     void Start()
     {
-        Debug.Assert(myTower, "Wrong initial parameters");
+        Debug.Assert(myTower, "Tham so khoi tao sai");
     }
-
-    /// <summary>
-    /// Build the tower.
-    /// </summary>
-    /// <param name="prefab">Prefab.</param>
     public void Build(GameObject prefab)
     {
         myTower.BuildTower(prefab);

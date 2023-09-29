@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Interface for all AI states.
-/// </summary>
 public interface IAiState
 {
     void OnStateEnter (string previousState, string newState);

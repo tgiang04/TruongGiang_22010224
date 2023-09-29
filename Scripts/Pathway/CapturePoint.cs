@@ -3,20 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// If enemy rise this point - player will be defeated.
+/// Nếu kẻ địch đến điểm này, trò chơi kết thúc
 /// </summary>
 public class CapturePoint : MonoBehaviour
 {
-    // Enemy already reached capture point
+    // Kẻ địch đến điểm bắt giữ
     private bool alreadyCaptured;
-
-    /// <summary>
-    /// Raises the trigger enter2d event.
-    /// </summary>
-    /// <param name="other">Other.</param>
     void OnTriggerEnter2D(Collider2D other)
     {
-        // If collision allowed for this scene
+        // Nếu cho phép va chạm 
         if (LevelManager.IsCollisionValid(gameObject.tag, other.gameObject.tag) == true)
         {
             if (alreadyCaptured == false)

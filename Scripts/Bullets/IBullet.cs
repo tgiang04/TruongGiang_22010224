@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Interface for all bullets.
+/// Giao diện chính cho đạn
 /// </summary>
 public interface IBullet
 {

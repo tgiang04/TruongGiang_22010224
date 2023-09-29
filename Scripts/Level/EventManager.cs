@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 /// <summary>
-/// My event type.
+//Loại sự kiện
 /// </summary>
 [System.Serializable]
 public class MyEvent : UnityEvent<GameObject, string>
@@ -13,7 +13,7 @@ public class MyEvent : UnityEvent<GameObject, string>
 }
 
 /// <summary>
-/// Message system.
+/// Hệ thống tin nhắn
 /// </summary>
 public class EventManager : MonoBehaviour
 {
@@ -26,7 +26,7 @@ public class EventManager : MonoBehaviour
                 eventManager = FindObjectOfType(typeof(EventManager)) as EventManager;
                 if (!eventManager)
                 {
-                    Debug.LogError("There needs to be one active EventManger script on a GameObject in your scene.");
+                    Debug.LogError("Can co mot scprits EventManager hoat dong ten mot GameObject.");
                 }
                 else
                 {
@@ -37,13 +37,13 @@ public class EventManager : MonoBehaviour
         }
     }
 
-    // Events list
+    // Danh sách sự kiện
     private Dictionary<string, MyEvent> eventDictionary;
-    // Instance of event manager
+    // Quản lí sự kiện
     private static EventManager eventManager;
 
     /// <summary>
-    /// Init this instance.
+    /// Khởi tạo đối tượng
     /// </summary>
     void Init()
     {
@@ -54,7 +54,7 @@ public class EventManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Start listening specified event.
+    /// Bắt đầu hướng vào sự kiện cụ thể
     /// </summary>
     /// <param name="eventName">Event name.</param>
     /// <param name="listener">Listener.</param>
@@ -74,7 +74,7 @@ public class EventManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Stop listening specified event.
+    /// Dừng lắng nghe sự kiện.
     /// </summary>
     /// <param name="eventName">Event name.</param>
     /// <param name="listener">Listener.</param>
@@ -89,7 +89,7 @@ public class EventManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Trigger specified event.
+    /// Kích hoạt sự kiện.
     /// </summary>
     /// <param name="eventName">Event name.</param>
     /// <param name="obj">Object.</param>

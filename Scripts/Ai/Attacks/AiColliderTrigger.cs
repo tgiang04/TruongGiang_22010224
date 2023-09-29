@@ -1,34 +1,26 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Dynamic filter for AI collision mask
-/// </summary>
+//Xu li va cham
 public class AiColliderTrigger : MonoBehaviour
 {
-    // Allowed objects tags for collision detection
+    // Phat hien va cham
     public List<string> tags = new List<string>();
-
-    // My collider
     private Collider2D col;
-    // AI behaviour component in parent object
+    // Thanh phan AI behavior nam trong doi tuong cha
     private AiBehavior aiBehavior;
-
-    /// <summary>
-    /// Awake this instance.
-    /// </summary>
     void Awake()
     {
         col = GetComponent<Collider2D>();
         aiBehavior = GetComponentInParent<AiBehavior>();
-        Debug.Assert(col && aiBehavior, "Wrong initial parameters");
+        Debug.Assert(col && aiBehavior, "Tham so khoi tao sai");
     }
 
     /// <summary>
-    /// Determines whether this instance is tag allowed the specified tag.
+    /// Xac dinh xem doi tuong có cho phep trong va cham khong
     /// </summary>
-    /// <returns><c>true</c> if this instance is tag allowed the specified tag; otherwise, <c>false</c>.</returns>
+    /// <returns><c>true</c> Neu duoc cho phep tag cu the trong va cham; nguoc lai, <c>false</c>.</returns>
     /// <param name="tag">Tag.</param>
     private bool IsTagAllowed(string tag)
     {
@@ -52,40 +44,38 @@ public class AiColliderTrigger : MonoBehaviour
     }
 
     /// <summary>
-    /// Raises the trigger enter2d event.
+    /// Goi khi va cham bat dau
     /// </summary>
     /// <param name="other">Other.</param>
     void OnTriggerEnter2D(Collider2D other)
     {
         if (IsTagAllowed(other.tag) == true)
         {
-            // Notify AI behavior about this event
+            // Thong bao cho AI behavior
             aiBehavior.TriggerEnter2D(col, other);
         }
     }
 
     /// <summary>
-    /// Raises the trigger stay2d event.
+    /// Goi khi tiep tuc va cham
     /// </summary>
     /// <param name="other">Other.</param>
     void OnTriggerStay2D(Collider2D other)
     {
         if (IsTagAllowed(other.tag) == true)
         {
-            // Notify AI behavior about this event
             aiBehavior.TriggerStay2D(col, other);
         }
     }
 
     /// <summary>
-    /// Raises the trigger exit2d event.
+    /// Goi khi ket thuc va cham.
     /// </summary>
     /// <param name="other">Other.</param>
     void OnTriggerExit2D(Collider2D other)
     {
         if (IsTagAllowed(other.tag) == true)
         {
-            // Notify AI behavior about this event
             aiBehavior.TriggerExit2D(col, other);
         }
     }

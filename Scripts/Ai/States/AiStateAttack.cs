@@ -3,83 +3,75 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Allows AI to attack targets.
+/// Cho phep AI tan cong muc tieu
 /// </summary>
 public class AiStateAttack : MonoBehaviour, IAiState
 {
-    // Attack target closest to the capture point
+    // Tan cong muc tieu gan nhat
     public bool useTargetPriority = false;
-    // Go to this state if agressive event occures
+    // Chuyen sang trang thai nay neu bi tan cong
     public string agressiveAiState;
-    // Go to this state if passive event occures
+    // Chuyen sang trang thai neu bi dong xay ra
     public string passiveAiState;
 
-
-    // AI behavior of this object
     private AiBehavior aiBehavior;
-    // Target for attack
+    // Muc tieu tan cong
     private GameObject target;
-    // List with potential targets finded during this frame
+    // Danh sach muc tieu tim thay trong moi frame
     private List<GameObject> targetsList = new List<GameObject>();
-    // My melee attack type if it is
+    // Loai vu khi tan gan
     private IAttack meleeAttack;
-    // My ranged attack type if it is
+    // Loai vu khi tam xa 
     private IAttack rangedAttack;
-    // Type of last attack is made
+    // Loai tan cong cuoi cung da thuc hien
     private IAttack myLastAttack;
-    // My navigation agent if it is
+    // Đối tượng điều hướng 
     NavAgent nav;
-    // Allows to await new target for one frame before exit from this state
+    // Cho phép chờ đối tượng mới trong một frame trước khi kết thúc
     private bool targetless;
 
-    /// <summary>
-    /// Awake this instance.
-    /// </summary>
     void Awake ()
     {
         aiBehavior = GetComponent<AiBehavior> ();
         meleeAttack = GetComponentInChildren<AttackMelee>() as IAttack;
         rangedAttack = GetComponentInChildren<AttackRanged>() as IAttack;
         nav = GetComponent<NavAgent>();
-        Debug.Assert ((aiBehavior != null) && ((meleeAttack != null) || (rangedAttack != null)), "Wrong initial parameters");
+        // Kiểm tra tham số đầu vào
+        Debug.Assert ((aiBehavior != null) && ((meleeAttack != null) || (rangedAttack != null)), "Tham so khoi tao sai");
     }
 
     /// <summary>
-    /// Raises the state enter event.
+    /// Gọi OnStateEnter khi vào trạng thái này
     /// </summary>
-    /// <param name="previousState">Previous state.</param>
-    /// <param name="newState">New state.</param>
+    /// <param name="previousState">Trạng thai trước đó.</param>
+    /// <param name="newState">Trạng thái mới.</param>
     public void OnStateEnter (string previousState, string newState)
     {
 
     }
 
-    /// <summary>
-    /// Raises the state exit event.
-    /// </summary>
-    /// <param name="previousState">Previous state.</param>
-    /// <param name="newState">New state.</param>
+    //Thoát trạng thái
     public void OnStateExit (string previousState, string newState)
     {
         LoseTarget();
     }
 
     /// <summary>
-    /// FixedUpdate for this instance.
+    /// FixedUpdate cho đối tượng
     /// </summary>
     void FixedUpdate ()
     {
-        // If have no target - try to get new target
+        // Tìm mục tiêu nếu không có mục tiêu có sẵn 
         if ((target == null) && (targetsList.Count > 0))
         {
             target = GetTopmostTarget();
             if ((target != null) && (nav != null))
             {
-                // Look at target
+                // Xác định mục tiêu 
                 nav.LookAt(target.transform);
             }
         }
-        // There are no targets around
+        // Không tìm thấy mục tiêu 
         if (target == null)
         {
             if (targetless == false)
@@ -88,20 +80,20 @@ public class AiStateAttack : MonoBehaviour, IAiState
             }
             else
             {
-                // If have no target more than one frame - exit from this state
+                // Thoát khỏi trạng thái nếu không tìm thấy đối tượng trong một frame
                 aiBehavior.ChangeState(passiveAiState);
             }
         }
     }
 
     /// <summary>
-    /// Gets top priority target from list.
+    /// Lấy mục tiêu ưu tiên hàng đầu 
     /// </summary>
-    /// <returns>The topmost target.</returns>
+    /// <returns>Mục tiêu hàng đầu.</returns>
     private GameObject GetTopmostTarget()
     {
         GameObject res = null;
-        if (useTargetPriority == true) // Get target with minimum distance to capture point
+        if (useTargetPriority == true) // Lấy mục tiêu có khoảng cách tối thiểu
         {
             float minPathDistance = float.MaxValue;
             foreach (GameObject ai in targetsList)
@@ -118,17 +110,17 @@ public class AiStateAttack : MonoBehaviour, IAiState
                 }
             }
         }
-        else // Get first target from list
+        else // Lấy mục tiêu đầu tiên
         {
             res = targetsList[0];
         }
-        // Clear list of potential targets
+        // Xóa danh sách mục tiêu quan trọng
         targetsList.Clear();
         return res;
     }
 
     /// <summary>
-    /// Loses the current target.
+    /// Mất mục tiêu
     /// </summary>
     private void LoseTarget()
     {
@@ -138,7 +130,7 @@ public class AiStateAttack : MonoBehaviour, IAiState
     }
 
     /// <summary>
-    /// Triggers the enter.
+    /// Kích hoạt va chạm
     /// </summary>
     /// <param name="my">My.</param>
     /// <param name="other">Other.</param>
@@ -146,46 +138,37 @@ public class AiStateAttack : MonoBehaviour, IAiState
     {
 
     }
-
-    /// <summary>
-    /// Triggers the stay.
-    /// </summary>
-    /// <param name="my">My.</param>
-    /// <param name="other">Other.</param>
-    public void TriggerStay(Collider2D my, Collider2D other)
+    // Tiếp tục va chạm 
+     public void TriggerStay(Collider2D my, Collider2D other)
     {
-        if (target == null) // Add new target to potential targets list
+        if (target == null) // Thêm mục tiêu mới vào danh sách
         {
             targetsList.Add(other.gameObject);
         }
-        else // Attack current target
+        else // Tấn công mục tiêu hiện tại 
         {
-            // If this is my current target
+            // Đang là mục tiêu hiện tại 
             if (target == other.gameObject)
             {
-                if (my.name == "MeleeAttack") // If target is in melee attack range
+                if (my.name == "MeleeAttack") // Mục tiêu nằm trong phạm vi tấn công liền kề
                 {
-                    // If I have melee attack type
+                    // Nếu có loại tấn công gần
                     if (meleeAttack != null)
                     {
-                        // Remember my last attack type
+                        // Ghi nhớ lần tấn công cuối cùng
                         myLastAttack = meleeAttack as IAttack;
-                        // Try to make melee attack
+                        // THực hiện tấn công
                         meleeAttack.Attack(other.transform);
                     }
                 }
-                else if (my.name == "RangedAttack") // If target is in ranged attack range
+                else if (my.name == "RangedAttack") // Mục tiêu nằm trong phạm vi tấn công tầm xa
                 {
-                    // If I have ranged attack type
                     if (rangedAttack != null)
                     {
-                        // If target not in melee attack range
                         if ((meleeAttack == null)
                             || ((meleeAttack != null) && (myLastAttack != meleeAttack)))
                         {
-                            // Remember my last attack type
                             myLastAttack = rangedAttack as IAttack;
-                            // Try to make ranged attack
                             rangedAttack.Attack(other.transform);
                         }
                     }
@@ -194,16 +177,12 @@ public class AiStateAttack : MonoBehaviour, IAiState
         }
     }
 
-    /// <summary>
-    /// Triggers the exit.
-    /// </summary>
-    /// <param name="my">My.</param>
-    /// <param name="other">Other.</param>
+    // Kết thúc va chạm  
     public void TriggerExit(Collider2D my, Collider2D other)
     {
         if (other.gameObject == target)
         {
-            // Lose my target if it quit attack range
+            // Mục tiêu ra khỏi phạm vi tấn công
             LoseTarget();
         }
     }

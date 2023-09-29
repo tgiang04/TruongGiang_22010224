@@ -3,24 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Area Of Effect damage on destroing.
+/// Khu vực có hiệu lực sát thương khi tiêu diệt.
 /// </summary>
 public class AOE : MonoBehaviour
 {
-    // Area radius
+    // Bán kính của khu vực 
     public float radius = 0.3f;
-    // Damage amount
+    // Lượng sát thương 
     public int damage = 3;
-    // Explosion prefab
+    // Prefab nổ 
     public GameObject explosion;
-    // Explosion visual duration
+    // Thời gian hiển thị hiệu ứng nổ 
     public float explosionDuration = 1f;
 
-    // Scene is closed now. Forbidden to create new objects on destroy
+    // Đóng cảnh, không tạo đối tượng mới khi bị phá hủy 
     private bool isQuitting;
 
     /// <summary>
-    /// Raises the enable event.
+    /// Gọi khi OnEnable kích hoạt 
     /// </summary>
     void OnEnable()
     {
@@ -28,7 +28,7 @@ public class AOE : MonoBehaviour
     }
 
     /// <summary>
-    /// Raises the disable event.
+    /// Gọi khi OnDisable kích hoạt 
     /// </summary>
     void OnDisable()
     {
@@ -36,7 +36,7 @@ public class AOE : MonoBehaviour
     }
 
     /// <summary>
-    /// Raises the application quit event.
+    /// Gọi khi thoát ứng dụng 
     /// </summary>
     void OnApplicationQuit()
     {
@@ -44,21 +44,21 @@ public class AOE : MonoBehaviour
     }
 
     /// <summary>
-    /// Raises the destroy event.
+    /// Gọi khi bị hủy 
     /// </summary>
     void OnDestroy()
     {
-        // If scene is in progress
+        // Nếu đang trong một tiến trình 
         if (isQuitting == false)
         {
-            // Find all colliders in specified radius
+            // Tìm các collider trong bán kính cụ thể 
             Collider2D[] cols = Physics2D.OverlapCircleAll(transform.position, radius);
             foreach (Collider2D col in cols)
             {
-                // If collision allowed by scene
+                // Nếu va chạm được cho phép 
                 if (LevelManager.IsCollisionValid(gameObject.tag, col.gameObject.tag) == true)
                 {
-                    // If target can receive damage
+                    // Nếu mục tiêu có thể nhận sát thương 
                     DamageTaker damageTaker = col.gameObject.GetComponent<DamageTaker>();
                     if (damageTaker != null)
                     {
@@ -68,14 +68,14 @@ public class AOE : MonoBehaviour
             }
             if (explosion != null)
             {
-                // Create explosion visual effect
+                // Tạo hiệu ứng hình ảnh nổ
                 Destroy(Instantiate<GameObject>(explosion, transform.position, transform.rotation), explosionDuration);
             }
         }
     }
 
     /// <summary>
-    /// Raises on scene quit.
+    /// Gọi khi thoát cảnh 
     /// </summary>
     /// <param name="obj">Object.</param>
     /// <param name="param">Parameter.</param>

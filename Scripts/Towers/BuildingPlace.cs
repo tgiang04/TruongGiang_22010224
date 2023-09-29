@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Building place for towers.
+/// Nơi xây dựng tháp
 /// </summary>
 public class BuildingPlace : MonoBehaviour
 {

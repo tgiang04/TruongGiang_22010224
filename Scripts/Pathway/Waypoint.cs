@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Waypoint of pathway.
+/// Điểm trên con đường .
 /// </summary>
 public class Waypoint : MonoBehaviour
 {

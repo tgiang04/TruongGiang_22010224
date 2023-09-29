@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Price of tower or unit.
+/// Giá tiền của tháp
 /// </summary>
 public class Price : MonoBehaviour
 {
-    // Price in gold
     public int price;
 }

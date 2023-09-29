@@ -3,36 +3,34 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Attack with ranged weapon
+/// Tan cong bang vu khi tam xa
 /// </summary>
 public class AttackRanged : MonoBehaviour, IAttack
 {
-    // Damage amount
     public int damage = 1;
-    // Cooldown between attacks
     public float cooldown = 1f;
-    // Prefab for arrows
+    // Prefab cua mui ten, dan(Doi tuong duoc ban ra)
     public GameObject arrowPrefab;
-    // From this position arrows will fired
+    // Vi tri tu do mui ten se duoc ban di
     public Transform firePoint;
 
-    // Animation controller for this AI
+    // Bo dieu khien Animation cho doi tuong
     private Animation anim;
-    // Counter for cooldown calculation
     private float cooldownCounter;
 
     /// <summary>
-    /// Awake this instance.
+    /// Khoi tao doi tuong trong scene
     /// </summary>
     void Awake()
     {
         anim = GetComponentInParent<Animation>();
         cooldownCounter = cooldown;
-        Debug.Assert(arrowPrefab && firePoint, "Wrong initial parameters");
+        // Kiem tra xem arrowPrefab va firePoint co duoc dat chua
+        Debug.Assert(arrowPrefab && firePoint, "Tham so khoi tao sai");
     }
 
     /// <summary>
-    /// Update this instance.
+    /// Update duoc goi trong moi frame.
     /// </summary>
     void Update()
     {
@@ -43,34 +41,35 @@ public class AttackRanged : MonoBehaviour, IAttack
     }
 
     /// <summary>
-    /// Attack the specified target if cooldown expired
+    /// Tan cong muc tieu chi dinh
     /// </summary>
     /// <param name="target">Target.</param>
     public void Attack(Transform target)
     {
+        //Kiem tra cooldownCounter da het cooldown chua
         if (cooldownCounter >= cooldown)
         {
-            cooldownCounter = 0f;
-            Fire(target);
+            cooldownCounter = 0f;//Dat lai de bat dau dem lai cooldown
+            Fire(target);//Thuc hien tan cong
         }
     }
 
     /// <summary>
-    /// Make ranged attack
+    /// Thuc hien ban ra dan, mui ten
     /// </summary>
     /// <param name="target">Target.</param>
     private void Fire(Transform target)
     {
         if (target != null)
         {
-            // Create arrow
+            // Tao ra dan, mui ten tu prefab tai vi tri va huong cua firePoint
             GameObject arrow = Instantiate(arrowPrefab, firePoint.position, firePoint.rotation);
             IBullet bullet = arrow.GetComponent<IBullet>();
-            bullet.SetDamage(damage);
-            bullet.Fire(target);
+            bullet.SetDamage(damage);//Khoi tao sat thuong
+            bullet.Fire(target);//Ban dan, mui ten theo huong target
             if (anim != null)
             {
-                anim.Play("AttackRanged");
+                anim.Play("AttackRanged");//Chay anim
             }
         }
     }

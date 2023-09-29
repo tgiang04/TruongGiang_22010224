@@ -3,30 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Camera control script.
+/// Điều khiển camera
 /// </summary>
 public class CameraControl : MonoBehaviour
 {
-    // Start view width
+    // Chiều rộng khung hình ban đầu
     private int defaultWidth;
-    // Width on last change
+    // Chiều rộng lần cuối cùng đã cập nhật
     private int lastUpdatedWidth;
-    // Start camera size
+    // Kích thước camera ban đầu
     private float defaultCameraSize;
-
-    /// <summary>
-    /// Start this instance.
-    /// </summary>
     void Start()
     {
         defaultWidth = lastUpdatedWidth = Camera.main.pixelWidth;
         defaultCameraSize = Camera.main.orthographicSize;
         ChangeCameraSize();
     }
-
-    /// <summary>
-    /// Update this instance.
-    /// </summary>
     void Update()
     {
         if (lastUpdatedWidth != Camera.main.pixelWidth)
@@ -37,7 +29,7 @@ public class CameraControl : MonoBehaviour
     }
 
     /// <summary>
-    /// Change camera size to keep same view width.
+    /// Thay đổi kích thước camera để duy trì chiều rộng hiển thị không đổi.
     /// </summary>
     private void ChangeCameraSize()
     {

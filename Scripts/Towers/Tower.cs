@@ -3,45 +3,33 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Tower building and operation.
+/// Xây dựng và vận hành tháp.
 /// </summary>
 public class Tower : MonoBehaviour
 {
-    // Prefab for building tree
+    // Prefab cho cây xây dựng
     public GameObject buildingTreePrefab;
-    // Attack range of this tower
+    // Phạm vi tấn công của tháp
     public GameObject range;
 
-    // User interface manager
+    // Quản lý giao diện người dùng
     private UiManager uiManager;
-    // Level UI canvas for building tree display
+    // Canvas UI cấp độ để hiển thị cây xây dựng
     private Canvas canvas;
-    // Collider of this tower
+    // Collider của tháp
     private Collider2D bodyCollider;
-    // Displayed building tree
+    // Cây xây dựng đang hiển thị
     private BuildingTree activeBuildingTree;
-
-    /// <summary>
-    /// Raises the enable event.
-    /// </summary>
     void OnEnable()
     {
         EventManager.StartListening("GamePaused", GamePaused);
         EventManager.StartListening("UserClick", UserClick);
     }
-
-    /// <summary>
-    /// Raises the disable event.
-    /// </summary>
     void OnDisable()
     {
         EventManager.StopListening("GamePaused", GamePaused);
         EventManager.StopListening("UserClick", UserClick);
     }
-
-    /// <summary>
-    /// Awake this instance.
-    /// </summary>
     void Awake()
     {
         uiManager = FindObjectOfType<UiManager>();
@@ -55,62 +43,58 @@ public class Tower : MonoBehaviour
             }
         }
         bodyCollider = GetComponent<Collider2D>();
-        Debug.Assert(uiManager && canvas && bodyCollider, "Wrong initial parameters");
+        Debug.Assert(uiManager && canvas && bodyCollider, "Tham so khoi tao sai");
     }
-
-    /// <summary>
-    /// Opens the building tree.
-    /// </summary>
     private void OpenBuildingTree()
     {
         if (buildingTreePrefab != null)
         {
-            // Create building tree
+            // Tạo cây xây dhuwnjg
             activeBuildingTree = Instantiate<GameObject>(buildingTreePrefab, canvas.transform).GetComponent<BuildingTree>();
-            // Set it over the tower
+            // Đặt qua tháp
             activeBuildingTree.transform.position = Camera.main.WorldToScreenPoint(transform.position);
             activeBuildingTree.myTower = this;
-            // Disable tower raycast
+            // Tắt raycast của tháp
             bodyCollider.enabled = false;
         }
     }
 
     /// <summary>
-    /// Closes the building tree.
+    /// Đóng cây xây dựng
     /// </summary>
     private void CloseBuildingTree()
     {
         if (activeBuildingTree != null)
         {
             Destroy(activeBuildingTree.gameObject);
-            // Enable tower raycast
+            // Bật raycast của tháp
             bodyCollider.enabled = true;
         }
     }
 
     /// <summary>
-    /// Builds the tower.
+    /// Xây dựng tháp.
     /// </summary>
     /// <param name="towerPrefab">Tower prefab.</param>
     public void BuildTower(GameObject towerPrefab)
     {
-        // Close active building tree
+        // Đóng cây xây dựng đang hoạt động
         CloseBuildingTree();
         Price price = towerPrefab.GetComponent<Price>();
-        // If anough gold
+        // Đủ tiền
         if (uiManager.SpendGold(price.price) == true)
         {
-            // Create new tower and place it on same position
+            // Tạo tháp mới và đặt nó ở cùng vị trí
             GameObject newTower = Instantiate<GameObject>(towerPrefab, transform.parent);
             newTower.transform.position = transform.position;
             newTower.transform.rotation = transform.rotation;
-            // Destroy old tower
+            // Hủy tháp cũ
             Destroy(gameObject);
         }
     }
 
     /// <summary>
-    /// Disable tower raycast and close building tree on game pause.
+    /// Tắt raycast của tháp và đóng cây xây dựng khi trò chơi tạm dừng.
     /// </summary>
     /// <param name="obj">Object.</param>
     /// <param name="param">Parameter.</param>
@@ -121,42 +105,31 @@ public class Tower : MonoBehaviour
             CloseBuildingTree();
             bodyCollider.enabled = false;
         }
-        else // Unpaused
+        else // Tiếp tục chơi
         {
             bodyCollider.enabled = true;
         }
     }
-
-    /// <summary>
-    /// On user click.
-    /// </summary>
-    /// <param name="obj">Object.</param>
-    /// <param name="param">Parameter.</param>
     private void UserClick(GameObject obj, string param)
     {
-        if (obj == gameObject) // This tower is clicked
+        if (obj == gameObject) 
         {
-            // Show attack range
+            // Hiển thị phạm vi tấn công
             ShowRange(true);
             if (activeBuildingTree == null)
             {
-                // Open building tree if it is not
+                // Mở cây xây dựng nếu nó chưa được mở
                 OpenBuildingTree();
             }
         }
-        else // Other click
+        else 
         {
-            // Hide attack range
+            // Ẩn phạm vi tấn công
             ShowRange(false);
-            // Close active building tree
+            // Đóng cây xây dựng đang hoạt động
             CloseBuildingTree();
         }
     }
-
-    /// <summary>
-    /// Display tower's attack range.
-    /// </summary>
-    /// <param name="condition">If set to <c>true</c> condition.</param>
     private void ShowRange(bool condition)
     {
         if (range != null)

@@ -4,42 +4,42 @@ using UnityEngine;
 using UnityEngine.AI;
 
 /// <summary>
-/// Arrow fly trajectory.
+/// Quỹ đạo bay của đạn .
 /// </summary>
 public class BulletArrow : MonoBehaviour, IBullet
 {
-    // Damage amount
+    // Sát thương gây ra 
     public int damage = 1;
-    // Maximum life time
+    // Thời gian sống tối da 
     public float lifeTime = 3f;
-    // Starting speed
+    // Tốc độ ban đầu 
     public float speed = 3f;
-    // Constant acceleration
+    // Tăng tốc độ theo thời gian 
     public float speedUpOverTime = 0.5f;
-    // If target is close than this distance - it will be hitted
+    // Khoảng cách gần nhất để trúng mục tiêu 
     public float hitDistance = 0.2f;
-    // Ballistic trajectory offset (in distance to target)
+    // Độ lêch quỹ đạo (Khoảng cách đến mục tiêu)
     public float ballisticOffset = 0.5f;
-    // Do not rotate bullet during fly
+    // Không xoay đạn trong quá trình bay 
     public bool freezeRotation = false;
 
-    // From this position bullet was fired
+    // Vị trí xuất phát đạn 
     private Vector2 originPoint;
-    // Aimed target
+    // Mục tiêu đã nhắm
     private Transform target;
-    // Last target's position
+    // Vị trí mục tiêu cuối cùng 
     private Vector2 aimPoint;
-    // Current position without ballistic offset
+    // Vị trí hiện tjai mà không tính lệch quỹ đjao 
     private Vector2 myVirtualPosition;
-    // Position on last frame
+    // Vị trí trong frame trước 
     private Vector2 myPreviousPosition;
-    // Counter for acceleration calculation
+    // Biến đếm cho tính toán gia tốc 
     private float counter;
-    // Image of this bullet
+    // Hình ảnh của viên đạn
     private SpriteRenderer sprite;
 
     /// <summary>
-    /// Set damage amount for this bullet.
+    /// Cài đặt sát thương cho viên đạn 
     /// </summary>
     /// <param name="damage">Damage.</param>
     public void SetDamage(int damage)
@@ -48,64 +48,60 @@ public class BulletArrow : MonoBehaviour, IBullet
     }
 
     /// <summary>
-    /// Fire bullet towards specified target.
+    /// Bắn viên đạn vào mục tiêu theo quỹ đạo đã được chọn .
     /// </summary>
     /// <param name="target">Target.</param>
     public void Fire(Transform target)
     {
         sprite = GetComponent<SpriteRenderer>();
-        // Disable sprite on first frame beqause we do not know fly direction yet
+        // Vô hiệu hóa sprite trong frame đầu vì chưa biết hướng bay
         sprite.enabled = false;
         originPoint = myVirtualPosition = myPreviousPosition = transform.position;
         this.target = target;
         aimPoint = target.position;
-        // Destroy bullet after lifetime
+        // Xóa viên đạn sau thời gian tồn tại 
         Destroy(gameObject, lifeTime);
     }
-
-    /// <summary>
-    /// Update this instance.
-    /// </summary>
     void Update ()
     {
         counter += Time.deltaTime;
-        // Add acceleration
+        // Thêm gia tốc 
         speed += Time.deltaTime * speedUpOverTime;
         if (target != null)
         {
             aimPoint = target.position;
         }
-        // Calculate distance from firepoint to aim
+        // Tính khoảng cách từ điểm bắn đến điểm nhắm 
         Vector2 originDistance = aimPoint - originPoint;
-        // Calculate remaining distance
+        // Tính toán đoạn còn lại 
         Vector2 distanceToAim = aimPoint - (Vector2)myVirtualPosition;
-        // Move towards aim
+        // Tiến tới mục tiêu
         myVirtualPosition = Vector2.Lerp(originPoint, aimPoint, counter * speed / originDistance.magnitude);
-        // Add ballistic offset to trajectory
+        // Thêm phần bù đạn đạo vào quỹ đạo
         transform.position = AddBallisticOffset(originDistance.magnitude, distanceToAim.magnitude);
-        // Rotate bullet towards trajectory
+        // Xoay viên đạn theo quỹ đạo 
         LookAtDirection2D((Vector2)transform.position - myPreviousPosition);
         myPreviousPosition = transform.position;
         sprite.enabled = true;
-        // Close enough to hit
+        // Đủ gần để tấn công
         if (distanceToAim.magnitude <= hitDistance)
         {
             if (target != null)
             {
-                // If target can receive damage
+                // Mục tiêu có thể nhận sát thương
                 DamageTaker damageTaker = target.GetComponent<DamageTaker>();
                 if (damageTaker != null)
                 {
                     damageTaker.TakeDamage(damage);
                 }
             }
-            // Destroy bullet
+            // Hủy viên đạn
             Destroy(gameObject);
         }
     }
 
     /// <summary>
-    /// Looks at direction2d.
+    /// Nhìn vào hướng 2d 
     /// </summary>
     /// <param name="direction">Direction.</param>
     private void LookAtDirection2D(Vector2 direction)
@@ -118,7 +114,7 @@ public class BulletArrow : MonoBehaviour, IBullet
     }
 
     /// <summary>
-    /// Adds ballistic offset to trajectory.
+    /// Thêm độ lệch đạn vào quỹ đạo 
     /// </summary>
     /// <returns>The ballistic offset.</returns>
     /// <param name="originDistance">Origin distance.</param>
@@ -127,10 +123,10 @@ public class BulletArrow : MonoBehaviour, IBullet
     {
         if (ballisticOffset > 0f)
         {
-            // Calculate sinus offset
+            // Tính toán độ lệch
             float offset = Mathf.Sin(Mathf.PI * ((originDistance - distanceToAim) / originDistance));
             offset *= originDistance;
-            // Add offset to trajectory
+            // Thêm offset vào quỹ đạo 
             return (Vector2)myVirtualPosition + (ballisticOffset * offset * Vector2.up);
         }
         else
